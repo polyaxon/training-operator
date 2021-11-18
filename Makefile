@@ -1,6 +1,7 @@
 # Image URL to use all building/pushing image targets
-IMG ?= kubeflow/training-operator:latest
-# CRD generation options
+IMAGE_NAME ?= polyaxon/polyaxon-training-operator
+RELEASE_VERSION ?= latest
+# Produce CRDs that work back to Kubernetes 1.11 (no version conversion)
 CRD_OPTIONS ?= "crd:generateEmbeddedObjectMeta=true,maxDescLen=400"
 
 # Get the currently used golang install path (in GOPATH/bin, unless GOBIN is set)
@@ -84,10 +85,10 @@ run: manifests generate fmt vet ## Run a controller from your host.
 	go run ./cmd/training-operator.v1/main.go
 
 docker-build: test ## Build docker image with the manager.
-	docker build -t ${IMG} -f build/images/training-operator/Dockerfile .
+	docker build -t ${IMAGE_NAME}:${RELEASE_VERSION} -f build/images/training-operator/Dockerfile .
 
 docker-push: ## Push docker image with the manager.
-	docker push ${IMG}
+	docker push ${IMAGE_NAME}:${RELEASE_VERSION}
 
 ##@ Deployment
 
@@ -98,7 +99,7 @@ uninstall: manifests kustomize ## Uninstall CRDs from the K8s cluster specified 
 	$(KUSTOMIZE) build manifests/base/crds | kubectl delete -f -
 
 deploy: manifests kustomize ## Deploy controller to the K8s cluster specified in ~/.kube/config.
-	cd manifests/overlays/standalone && $(KUSTOMIZE) edit set image kubeflow/training-operator=${IMG}
+	cd manifests/overlays/standalone && $(KUSTOMIZE) edit set image kubeflow/training-operator=${IMAGE_NAME}:${RELEASE_VERSION}
 	$(KUSTOMIZE) build manifests/overlays/standalone | kubectl apply -f -
 
 undeploy: ## Undeploy controller from the K8s cluster specified in ~/.kube/config.

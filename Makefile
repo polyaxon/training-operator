@@ -1,5 +1,5 @@
 # Image URL to use all building/pushing image targets
-IMAGE_NAME ?= polyaxon/polyaxon-training-operator
+IMAGE_NAME ?= polyaxon/training-operator
 RELEASE_VERSION ?= latest
 # Produce CRDs that work back to Kubernetes 1.11 (no version conversion)
 CRD_OPTIONS ?= "crd:generateEmbeddedObjectMeta=true,maxDescLen=400"
@@ -84,7 +84,7 @@ build: generate fmt vet ## Build manager binary.
 run: manifests generate fmt vet ## Run a controller from your host.
 	go run ./cmd/training-operator.v1/main.go
 
-docker-build: test ## Build docker image with the manager.
+docker-build: ## Build docker image with the manager.
 	docker build -t ${IMAGE_NAME}:${RELEASE_VERSION} -f build/images/training-operator/Dockerfile .
 
 docker-push: ## Push docker image with the manager.

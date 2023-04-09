@@ -90,6 +90,10 @@ docker-build: ## Build docker image with the manager.
 docker-push: ## Push docker image with the manager.
 	docker push ${IMAGE_NAME}:${RELEASE_VERSION}
 
+docker-multi-arch: ## Build and push docker multi-arch image with the manager.
+	docker buildx create --use
+	docker buildx build --push -t ${IMAGE_NAME}:${RELEASE_VERSION} --platform linux/amd64,linux/arm64 -f build/images/training-operator/Dockerfile .
+
 ##@ Deployment
 
 install: manifests kustomize ## Install CRDs into the K8s cluster specified in ~/.kube/config.
